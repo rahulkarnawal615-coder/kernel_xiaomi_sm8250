@@ -40,12 +40,12 @@ jobs:
         rm -rf fs/KernelSU
         git clone https://github.com/LyraVoid/FinaSU.git fs/KernelSU
         
-        # 2. Inject FinaSU into kernel build system
+        # 2. Inject FinaSU into kernel build system (agar hooks nahi hain toh)
         echo "Injecting Kconfig and Makefile hooks for FinaSU..."
         grep -q "KernelSU" fs/Kconfig || sed -i '/source "fs\/quota\/Kconfig"/a source "fs/KernelSU/Kconfig"' fs/Kconfig
         grep -q "KernelSU" fs/Makefile || sed -i '/obj-$(CONFIG_QUOTA)/a obj-y += KernelSU\/' fs/Makefile
         
-        # 3. Clone SUSFS4KSU patches (GitLab link)
+        # 3. Clone SUSFS4KSU patches (GitLab ka Sahi Link)
         cd $GITHUB_WORKSPACE
         git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git
         
@@ -55,7 +55,6 @@ jobs:
         cp $GITHUB_WORKSPACE/susfs4ksu/kernel_patches/$PATCH_FILE ./
         cp $GITHUB_WORKSPACE/susfs4ksu/kernel_patches/fs/susfs.c ./fs/
         cp $GITHUB_WORKSPACE/susfs4ksu/kernel_patches/include/linux/susfs.h ./include/linux/
-        cp $GITHUB_WORKSPACE/susfs4ksu/kernel_patches/include/linux/susfs_def.h ./include/linux/
         
         # Patching core kernel files
         patch -p1 < $PATCH_FILE || echo "Some patches failed or already applied, check logs."
@@ -97,7 +96,7 @@ jobs:
       run: |
         git clone --depth=1 -b $ANYKERNEL3_BRANCH $ANYKERNEL3_URL AnyKernel3
         cd AnyKernel3
-        
+        # Remove empty files from AnyKernel3 template
         rm -rf AnyKernel3/patch AnyKernel3/ramdisk
         
         # Copy compiled images
@@ -118,4 +117,3 @@ jobs:
       with:
         name: MagicTime-FinaSU-Alioth-MIUI
         path: MagicTime-FinaSU-Alioth-MIUI.zip
-        
